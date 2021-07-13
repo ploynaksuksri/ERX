@@ -27,6 +27,7 @@ namespace WebApi
             services.AddControllers();
             services.AddTransient<IQuestionRepository, QuestionRepository>();
             services.AddTransient<IAnswerRepository, AnswerRepository>();
+            services.AddTransient<IChoiceRepository, ChoiceRepository>();
             services.AddTransient<IQuestionManager, QuestionManager>();
             services.AddTransient<IAnswerManager, AnswerManager>();
         }

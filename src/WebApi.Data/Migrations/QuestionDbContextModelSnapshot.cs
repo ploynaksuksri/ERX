@@ -117,9 +117,11 @@ namespace WebApi.Data.Migrations
 
             modelBuilder.Entity("WebApi.Data.Models.Choice", b =>
                 {
-                    b.HasOne("WebApi.Data.Models.Question", null)
+                    b.HasOne("WebApi.Data.Models.Question", "Question")
                         .WithMany("Choices")
                         .HasForeignKey("QuestionId");
+
+                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("WebApi.Data.Models.Question", b =>

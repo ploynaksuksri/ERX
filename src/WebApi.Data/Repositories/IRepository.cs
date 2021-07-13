@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace WebApi.Data.Repositories
 {
@@ -6,7 +8,7 @@ namespace WebApi.Data.Repositories
     {
         IEnumerable<TEntity> GetAll();
 
-        TEntity Get(int id);
+        Task<IQueryable<TEntity>> Get(int id);
 
         TEntity Add(TEntity obj, bool autoSave = false);
 

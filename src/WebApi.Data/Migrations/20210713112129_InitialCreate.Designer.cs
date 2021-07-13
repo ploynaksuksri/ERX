@@ -10,7 +10,7 @@ using WebApi.Data;
 namespace WebApi.Data.Migrations
 {
     [DbContext(typeof(QuestionDbContext))]
-    [Migration("20210713110214_InitialCreate")]
+    [Migration("20210713112129_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,9 +119,11 @@ namespace WebApi.Data.Migrations
 
             modelBuilder.Entity("WebApi.Data.Models.Choice", b =>
                 {
-                    b.HasOne("WebApi.Data.Models.Question", null)
+                    b.HasOne("WebApi.Data.Models.Question", "Question")
                         .WithMany("Choices")
                         .HasForeignKey("QuestionId");
+
+                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("WebApi.Data.Models.Question", b =>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace WebApi.Data.Repositories
 {
@@ -28,9 +29,9 @@ namespace WebApi.Data.Repositories
         {
         }
 
-        public TEntity Get(int id)
+        public async Task<IQueryable<TEntity>> Get(int id)
         {
-            return _list.FirstOrDefault();
+            return (IQueryable<TEntity>)await _dbContext.Set<TEntity>().FindAsync(id);
         }
 
         public IEnumerable<TEntity> GetAll()

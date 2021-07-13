@@ -21,6 +21,8 @@ namespace WebApi.Data.DataMigration
                     {
                         appContext.Database.Migrate();
                         new QuestionSeeder(scope.ServiceProvider.GetRequiredService<IQuestionRepository>()).SeedData();
+                        new ChoiceSeeder(scope.ServiceProvider.GetRequiredService<IChoiceRepository>(),
+                            scope.ServiceProvider.GetRequiredService<IQuestionRepository>()).SeedData();
                     }
                     catch (Exception ex)
                     {

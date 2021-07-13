@@ -17,7 +17,6 @@ namespace WebApi.Data.Models
         public Question(string title)
         {
             Title = title;
-            CreatedDateTime = DateTime.Now;
         }
     }
 }

@@ -6,7 +6,7 @@ using WebApi.Data.Repositories;
 
 namespace WebApi.Data.DataSeeder
 {
-    public class QuestionSeeder : BaseDataSeeder<Question>
+    public class QuestionSeeder : BaseDataSeeder<Question>, IDataSeeder
     {
         private List<Question> _questions = new List<Question>()
         {
