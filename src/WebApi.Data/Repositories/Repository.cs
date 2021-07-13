@@ -40,7 +40,7 @@ namespace WebApi.Data.Repositories
 
         public void SaveChanges()
         {
-            throw new NotImplementedException();
+            _dbContext.SaveChanges();
         }
 
         public virtual void Update(TEntity obj)
@@ -48,10 +48,14 @@ namespace WebApi.Data.Repositories
             throw new NotImplementedException();
         }
 
-        TEntity IRepository<TEntity>.Add(TEntity obj)
+        TEntity IRepository<TEntity>.Add(TEntity obj, bool autoSave = false)
         {
             _dbContext.Set<TEntity>().Add(obj);
-            _dbContext.SaveChanges();
+            if (autoSave)
+            {
+                _dbContext.SaveChanges();
+            }
+
             return obj;
         }
     }

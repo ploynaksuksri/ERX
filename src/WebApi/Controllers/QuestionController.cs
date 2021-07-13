@@ -13,6 +13,7 @@ namespace WebApi.Controllers
     public class QuestionController : ControllerBase
     {
         private IQuestionManager _questionManager;
+
         public QuestionController(IQuestionManager questionManager)
         {
             _questionManager = questionManager;
@@ -49,7 +50,6 @@ namespace WebApi.Controllers
         public void Delete(int id)
         {
             _questionManager.Delete(id);
-           
         }
     }
 }

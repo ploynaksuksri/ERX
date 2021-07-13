@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace WebApi.Data.Models
 {
@@ -6,17 +7,17 @@ namespace WebApi.Data.Models
     {
         public string Title { get; set; }
         public int Order { get; set; }
-        public List<Choice> Choices {get;set;}
+        public List<Choice> Choices { get; set; } = new List<Choice>();
+
         public bool IsMultipleChoice
         {
-            get
-            {
-                return Choices is null || Choices.Count == 0;
-            }
+            get => Choices.Count == 0;
+        }
+
+        public Question(string title)
+        {
+            Title = title;
+            CreatedDateTime = DateTime.Now;
         }
     }
-
-    
-
-    
 }

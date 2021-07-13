@@ -22,7 +22,8 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<QuestionDbContext>(options => options.UseSqlite(@"Data Source=C:\questionnaire.db"));
+            services.AddDbContext<QuestionDbContext>(options =>
+               options.UseSqlServer("Server=localhost;Database=Question;Trusted_Connection=True;"));
             services.AddControllers();
             services.AddTransient<IQuestionRepository, QuestionRepository>();
             services.AddTransient<IAnswerRepository, AnswerRepository>();

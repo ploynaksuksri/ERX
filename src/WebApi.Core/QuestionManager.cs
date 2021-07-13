@@ -8,10 +8,12 @@ namespace WebApi.Core
     public class QuestionManager : IQuestionManager
     {
         private IQuestionRepository _questionRepository;
+
         public QuestionManager(IQuestionRepository questionRepository)
         {
             _questionRepository = questionRepository;
         }
+
         public Question Add(Question question)
         {
             return _questionRepository.Add(question);
@@ -29,7 +31,7 @@ namespace WebApi.Core
 
         public void Update(Question question)
         {
-            _questionRepository.Update(question);        
+            _questionRepository.Update(question);
         }
     }
 }

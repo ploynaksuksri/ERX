@@ -8,7 +8,7 @@ namespace WebApi.Data.Repositories
 
         TEntity Get(int id);
 
-        TEntity Add(TEntity obj);
+        TEntity Add(TEntity obj, bool autoSave = false);
 
         void Update(TEntity obj);
 
