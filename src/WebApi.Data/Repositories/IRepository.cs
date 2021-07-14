@@ -1,21 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 
 namespace WebApi.Data.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        IEnumerable<TEntity> GetAll();
+        IQueryable<TEntity> GetAll();
 
-        Task<IQueryable<TEntity>> Get(int id);
+        Task<TEntity> Get(int id);
 
-        TEntity Add(TEntity obj, bool autoSave = false);
+        Task<TEntity> Add(TEntity obj, bool autoSave = false);
 
-        void Update(TEntity obj);
+        Task Update(TEntity obj);
 
-        void Delete(int id);
+        Task Delete(TEntity obj);
 
-        void SaveChanges();
+        Task SaveChanges();
     }
 }

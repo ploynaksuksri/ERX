@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApi.Data.Models;
 
 namespace WebApi.Data.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity>
-        where TEntity : class
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
     {
         protected List<TEntity> _list = new List<TEntity>();
         protected QuestionDbContext _dbContext;
@@ -20,41 +21,40 @@ namespace WebApi.Data.Repositories
         {
         }
 
-        public void Deleted(TEntity obj)
+        public async Task Delete(TEntity obj)
         {
-            _list.Remove(obj);
+            obj.IsDeleted = true;
+            _dbContext.Set<TEntity>().Update(obj);
+            await SaveChanges();
         }
 
-        public void Delete(int id)
+        public virtual async Task<TEntity> Get(int id)
         {
+            return await GetAll().FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
         }
 
-        public async Task<IQueryable<TEntity>> Get(int id)
+        public virtual IQueryable<TEntity> GetAll()
         {
-            return (IQueryable<TEntity>)await _dbContext.Set<TEntity>().FindAsync(id);
+            return _dbContext.Set<TEntity>().Where(e => !e.IsDeleted);
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public virtual async Task SaveChanges()
         {
-            return _dbContext.Set<TEntity>();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void SaveChanges()
+        public virtual async Task Update(TEntity obj)
         {
-            _dbContext.SaveChanges();
+            _dbContext.Entry(obj).State = EntityState.Modified;
+            await SaveChanges();
         }
 
-        public virtual void Update(TEntity obj)
-        {
-            throw new NotImplementedException();
-        }
-
-        TEntity IRepository<TEntity>.Add(TEntity obj, bool autoSave = false)
+        public virtual async Task<TEntity> Add(TEntity obj, bool autoSave = false)
         {
             _dbContext.Set<TEntity>().Add(obj);
             if (autoSave)
             {
-                _dbContext.SaveChanges();
+                await SaveChanges();
             }
 
             return obj;

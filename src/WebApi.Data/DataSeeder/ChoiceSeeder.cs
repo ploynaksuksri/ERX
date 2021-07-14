@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebApi.Data.Models;
 using WebApi.Data.Repositories;
 
@@ -23,7 +24,7 @@ namespace WebApi.Data.DataSeeder
 
         public void SeedData()
         {
-            var titleQuestion = GetQuestion("Title");
+            var titleQuestion = GetQuestionAsync("Title").GetAwaiter().GetResult();
             foreach (var title in _titles)
             {
                 title.Question = titleQuestion;
@@ -42,9 +43,9 @@ namespace WebApi.Data.DataSeeder
             }
         }
 
-        private Question GetQuestion(string title)
+        private async Task<Question> GetQuestionAsync(string title)
         {
-            return _questionRepository.GetByTitle(title);
+            return await _questionRepository.GetByTitle(title);
         }
     }
 }

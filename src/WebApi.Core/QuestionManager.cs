@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using WebApi.Data.Models;
 using WebApi.Data.Repositories;
 
@@ -8,30 +10,42 @@ namespace WebApi.Core
     public class QuestionManager : IQuestionManager
     {
         private IQuestionRepository _questionRepository;
+        private IChoiceRepository _choiceRepository;
 
-        public QuestionManager(IQuestionRepository questionRepository)
+        public QuestionManager(IQuestionRepository questionRepository, IChoiceRepository choiceRepository)
         {
             _questionRepository = questionRepository;
+            _choiceRepository = choiceRepository;
         }
 
-        public Question Add(Question question)
+        public async Task<Question> AddAsync(Question question)
         {
-            return _questionRepository.Add(question);
+            var result = await _questionRepository.Add(question, autoSave: true);
+            foreach (var choice in question.Choices)
+            {
+                await _choiceRepository.Add(choice);
+            }
+            return await _questionRepository.Get(result.Id);
         }
 
-        public void Delete(int id)
+        public async Task Delete(Question question)
         {
-            _questionRepository.Delete(id);
+            await _questionRepository.Delete(question);
         }
 
-        public IList<Question> Get()
+        public async Task<IList<Question>> GetAsync()
         {
-            return _questionRepository.GetAll().ToList();
+            return await _questionRepository.GetAll();
         }
 
-        public void Update(Question question)
+        public async Task<Question> GetAsync(int id)
         {
-            _questionRepository.Update(question);
+            return await _questionRepository.Get(id);
+        }
+
+        public async Task Update(Question question)
+        {
+            await _questionRepository.Update(question);
         }
     }
 }

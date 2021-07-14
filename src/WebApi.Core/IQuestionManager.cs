@@ -1,14 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebApi.Data.Models;
 
 namespace WebApi.Core
 {
     public interface IQuestionManager
     {
-        IList<Question> Get();
-        Question Add(Question question);
-        void Update(Question question);
-        void Delete(int id);
+        Task<IList<Question>> GetAsync();
 
+        Task<Question> GetAsync(int id);
+
+        Task<Question> AddAsync(Question question);
+
+        Task Update(Question question);
+
+        Task Delete(Question question);
     }
 }

@@ -31,6 +31,9 @@ namespace WebApi
             services.AddTransient<IQuestionManager, QuestionManager>();
             services.AddTransient<IAnswerManager, AnswerManager>();
 
+            services.AddControllers().AddNewtonsoftJson(x =>
+ x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddSwaggerGen();
         }
 

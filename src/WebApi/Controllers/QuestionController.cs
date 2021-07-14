@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebApi.Core;
 using WebApi.Data.Models;
 using WebApi.Data.Repositories;
+using WebApi.Dtos;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,37 +22,66 @@ namespace WebApi.Controllers
             _questionManager = questionManager;
         }
 
-        // GET: api/<QuestionController>
         [HttpGet]
-        public IEnumerable<Question> Get()
+        public async Task<IEnumerable<Question>> Get()
         {
-            return _questionManager.Get();
+            return await _questionManager.GetAsync();
         }
 
-        // GET api/<QuestionController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<Question> Get(int id)
         {
-            return "value";
+            return await _questionManager.GetAsync(id);
         }
 
-        // POST api/<QuestionController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<Question>> Post([FromBody] QuestionCreateDto question)
         {
+            if (question is null)
+                return BadRequest();
+
+            if (string.IsNullOrEmpty(question.Title))
+                return BadRequest();
+            var choices = new List<Choice>();
+            question.Choices.ForEach(e =>
+               {
+                   choices.Add(new Choice(e.Title));
+               });
+            var result = await _questionManager.AddAsync(new Question(question.Title));
+
+            return Created("", result);
         }
 
-        // PUT api/<QuestionController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task<ActionResult<Question>> Put([FromBody] QuestionEditDto question)
         {
+            if (question is null)
+                return BadRequest();
+
+            var existingQuestion = await _questionManager.GetAsync(question.Id);
+            if (existingQuestion is null)
+                return BadRequest();
+
+            existingQuestion.Title = question.Title;
+            var choices = new List<Choice>();
+            question.Choices.ForEach(e =>
+            {
+                choices.Add(new Choice(e.Title) { Id = e.Id });
+            });
+            existingQuestion.Choices = choices;
+            await _questionManager.Update(existingQuestion);
+            return NoContent();
         }
 
-        // DELETE api/<QuestionController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            _questionManager.Delete(id);
+            var existingQuestion = await _questionManager.GetAsync(id);
+            if (existingQuestion is null)
+                return BadRequest();
+
+            await _questionManager.Delete(existingQuestion);
+            return NoContent();
         }
     }
 }
