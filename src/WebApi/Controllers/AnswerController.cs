@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebApi.Core;
+using WebApi.Core.Checker;
 using WebApi.Data.Models;
 using WebApi.Dtos;
 
@@ -16,11 +20,16 @@ namespace WebApi.Controllers
     {
         private IAnswerManager _answerManager;
         private IQuestionManager _questionManager;
+        private IEnumerable<IAnswerChecker> _answerCheckers;
 
-        public AnswerController(IAnswerManager answerManager, IQuestionManager questionManager)
+        public AnswerController(
+            IServiceProvider serviceProvider,
+            IAnswerManager answerManager,
+            IQuestionManager questionManager)
         {
             _answerManager = answerManager;
             _questionManager = questionManager;
+            _answerCheckers = serviceProvider.GetServices<IAnswerChecker>();
         }
 
         [HttpGet]
@@ -41,6 +50,7 @@ namespace WebApi.Controllers
             if (question == null)
                 return BadRequest();
 
+            var isAnswerValid = true;
             var answer = new Answer();
             answer.Question = question;
             if (question.IsMultipleChoice)
@@ -49,16 +59,31 @@ namespace WebApi.Controllers
                 if (selectedChoice == null)
                     return BadRequest();
                 answer.Choice = selectedChoice;
+                isAnswerValid = CheckAnswer(answer.Choice.Title);
             }
             else
             {
                 if (string.IsNullOrEmpty(answerDto.WrittenAnswer))
                     return BadRequest();
                 answer.WrittenAnswer = answerDto.WrittenAnswer;
+                isAnswerValid = CheckAnswer(answer.WrittenAnswer);
             }
+
+            if (!isAnswerValid)
+                return BadRequest();
 
             var result = await _answerManager.Add(answer);
             return result;
+        }
+
+        private bool CheckAnswer(string answer)
+        {
+            foreach (var checker in _answerCheckers)
+            {
+                if (checker.IsValid(answer))
+                    return false;
+            }
+            return true;
         }
     }
 }

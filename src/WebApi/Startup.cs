@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebApi.Core;
+using WebApi.Core.Checker;
 using WebApi.Data;
 using WebApi.Data.Repositories;
 
@@ -30,6 +31,7 @@ namespace WebApi
             services.AddTransient<IChoiceRepository, ChoiceRepository>();
             services.AddTransient<IQuestionManager, QuestionManager>();
             services.AddTransient<IAnswerManager, AnswerManager>();
+            services.AddSingleton<IAnswerChecker, CountryChecker>();
 
             services.AddControllers().AddNewtonsoftJson(x =>
  x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
