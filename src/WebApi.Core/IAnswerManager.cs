@@ -10,6 +10,6 @@ namespace WebApi.Core
     {
         Task<Answer> Add(Answer answer);
 
-        string GetCsv();
+        Task<string> GetCsvAsync();
     }
 }

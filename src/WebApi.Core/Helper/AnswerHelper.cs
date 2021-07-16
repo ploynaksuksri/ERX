@@ -9,7 +9,13 @@ namespace WebApi.Core.Helper
     {
         public static string GenerateCsv(List<Answer> answers)
         {
-            return "Yes,No";
+            var stringBuilder = new StringBuilder();
+            foreach (var answer in answers)
+            {
+                var textAnswer = answer.Question.IsMultipleChoice ? answer.Choice.Title : answer.WrittenAnswer;
+                stringBuilder.AppendLine($"{answer.Question.Title},{textAnswer}");
+            }
+            return stringBuilder.ToString();
         }
     }
 }

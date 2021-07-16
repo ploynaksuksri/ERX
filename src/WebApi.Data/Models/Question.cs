@@ -11,7 +11,7 @@ namespace WebApi.Data.Models
 
         public bool IsMultipleChoice
         {
-            get => Choices.Count == 0;
+            get => Choices.Count > 0;
         }
 
         public Question(string title)

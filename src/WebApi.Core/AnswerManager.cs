@@ -19,13 +19,14 @@ namespace WebApi.Core
 
         public async Task<Answer> Add(Answer answer)
         {
-            var result = await _answerRepository.Add(answer);
+            var result = await _answerRepository.Add(answer, true);
             return result;
         }
 
-        public string GetCsv()
+        public async Task<string> GetCsvAsync()
         {
-            var csv = AnswerHelper.GenerateCsv(new List<Answer>());
+            var answers = await _answerRepository.GetAll();
+            var csv = AnswerHelper.GenerateCsv(answers);
             return csv;
         }
     }
