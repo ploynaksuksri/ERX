@@ -14,12 +14,12 @@ namespace WebApi.Data.Repositories
 
         public async Task<Question> GetByTitle(string title)
         {
-            return await _dbContext.Questions.FirstOrDefaultAsync(e => e.Title == title);
+            return await _dbContext.Questions.Include(e => e.Choices).FirstOrDefaultAsync(e => e.Title == title);
         }
 
         public async Task<Question> Get(int id)
         {
-            throw new System.NotImplementedException();
+            return await _dbContext.Questions.Include(e => e.Choices).FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task<List<Question>> GetAll()

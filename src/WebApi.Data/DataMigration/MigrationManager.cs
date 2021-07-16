@@ -20,9 +20,9 @@ namespace WebApi.Data.DataMigration
                     try
                     {
                         appContext.Database.Migrate();
-                        new QuestionSeeder(scope.ServiceProvider.GetRequiredService<IQuestionRepository>()).SeedData();
+                        new QuestionSeeder(scope.ServiceProvider.GetRequiredService<IQuestionRepository>()).SeedData().GetAwaiter().GetResult();
                         new ChoiceSeeder(scope.ServiceProvider.GetRequiredService<IChoiceRepository>(),
-                            scope.ServiceProvider.GetRequiredService<IQuestionRepository>()).SeedData();
+                            scope.ServiceProvider.GetRequiredService<IQuestionRepository>()).SeedData().GetAwaiter().GetResult();
                     }
                     catch (Exception ex)
                     {

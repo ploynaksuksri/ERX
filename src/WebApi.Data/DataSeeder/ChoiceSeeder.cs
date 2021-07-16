@@ -22,24 +22,46 @@ namespace WebApi.Data.DataSeeder
             new Choice("Mrs.")
         };
 
-        public void SeedData()
+        private List<Choice> _occupations = new List<Choice>()
         {
-            var titleQuestion = GetQuestionAsync("Title").GetAwaiter().GetResult();
+            new Choice("Software engineer"),
+            new Choice("Teacher"),
+            new Choice("Auditor"),
+            new Choice("Doctor"),
+            new Choice("Sales manager")
+        };
+
+        public async Task SeedData()
+        {
+            var titleQuestion = await GetQuestionAsync("Title");
             foreach (var title in _titles)
             {
+                if (titleQuestion.Choices.Exists(e => e.Title == title.Title))
+                    continue;
+
                 title.Question = titleQuestion;
-                AddNewType(title);
+                await AddNewAsync(title);
             }
 
-            _repository.SaveChanges();
+            var occupationQuestion = await GetQuestionAsync("Occupation");
+            foreach (var occupation in _occupations)
+            {
+                if (occupationQuestion.Choices.Exists(e => e.Title == occupation.Title))
+                    continue;
+
+                occupation.Question = occupationQuestion;
+                await AddNewAsync(occupation);
+            }
+
+            await _repository.SaveChanges();
         }
 
-        private void AddNewType(Choice Choice)
+        private async Task AddNewAsync(Choice Choice)
         {
-            var existingType = _repository.Get(Choice.Id);
+            var existingType = await _repository.Get(Choice.Id);
             if (existingType == null)
             {
-                _repository.Add(Choice, false);
+                await _repository.Add(Choice, false);
             }
         }
 
