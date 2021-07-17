@@ -4,9 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Scrutor;
+using System;
 using WebApi.Core;
 using WebApi.Core.Checker;
 using WebApi.Data;
+using WebApi.Data.DataSeeder;
 using WebApi.Data.Repositories;
 
 namespace WebApi
@@ -25,16 +28,17 @@ namespace WebApi
         {
             services.AddDbContext<QuestionDbContext>(options =>
                options.UseSqlServer("Server=localhost;Database=Question;Trusted_Connection=True;"));
+
             services.AddControllers();
-            services.AddTransient<IQuestionRepository, QuestionRepository>();
-            services.AddTransient<IAnswerRepository, AnswerRepository>();
-            services.AddTransient<IChoiceRepository, ChoiceRepository>();
-            services.AddTransient<IQuestionManager, QuestionManager>();
-            services.AddTransient<IAnswerManager, AnswerManager>();
-            services.AddSingleton<IAnswerChecker, CountryChecker>();
+
+            services.Scan(scan =>
+                scan.FromAssembliesOf(new Type[] { typeof(IDataSeeder), typeof(IAnswerChecker) })
+                    .AddClasses()
+                    .AsImplementedInterfaces()
+                    .WithTransientLifetime());
 
             services.AddControllers().AddNewtonsoftJson(x =>
- x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+                x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddSwaggerGen();
         }
