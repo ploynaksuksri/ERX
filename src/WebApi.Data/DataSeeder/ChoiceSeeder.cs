@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApi.Data.Models;
 using WebApi.Data.Repositories;
@@ -13,6 +15,7 @@ namespace WebApi.Data.DataSeeder
             : base(choiceRepository)
         {
             _questionRepository = questionRepository;
+            _countries = GetCountries();
         }
 
         private List<Choice> _titles = new List<Choice>()
@@ -31,7 +34,18 @@ namespace WebApi.Data.DataSeeder
             new Choice("Sales manager")
         };
 
+        private List<string> _countries = new List<string>();
+
         public async Task SeedData()
+        {
+            await SeedTitles();
+            await SeedOccupations();
+            await SeedCountries();
+        }
+
+        #region private
+
+        private async Task SeedTitles()
         {
             var titleQuestion = await GetQuestionAsync("Title");
             foreach (var title in _titles)
@@ -42,7 +56,11 @@ namespace WebApi.Data.DataSeeder
                 title.Question = titleQuestion;
                 await AddNewAsync(title);
             }
+            await _repository.SaveChanges();
+        }
 
+        private async Task SeedOccupations()
+        {
             var occupationQuestion = await GetQuestionAsync("Occupation");
             foreach (var occupation in _occupations)
             {
@@ -52,16 +70,27 @@ namespace WebApi.Data.DataSeeder
                 occupation.Question = occupationQuestion;
                 await AddNewAsync(occupation);
             }
-
             await _repository.SaveChanges();
         }
 
-        private async Task AddNewAsync(Choice Choice)
+        private async Task SeedCountries()
+        {
+            var countryQuestion = await GetQuestionAsync("Country of residence");
+            foreach (var country in _countries)
+            {
+                if (countryQuestion.Choices.Exists(e => e.Title == country))
+                    continue;
+
+                await AddNewAsync(new Choice(country) { Question = countryQuestion }, true);
+            }
+        }
+
+        private async Task AddNewAsync(Choice Choice, bool autoSave = false)
         {
             var existingType = await _repository.Get(Choice.Id);
             if (existingType == null)
             {
-                await _repository.Add(Choice, false);
+                await _repository.Add(Choice, autoSave);
             }
         }
 
@@ -69,5 +98,22 @@ namespace WebApi.Data.DataSeeder
         {
             return await _questionRepository.GetByTitle(title);
         }
+
+        private List<string> GetCountries()
+        {
+            var countries = new List<string>();
+            CultureInfo[] cultureInfo = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
+            foreach (CultureInfo culture in cultureInfo)
+            {
+                RegionInfo region = new RegionInfo(culture.LCID);
+                if (!countries.Contains(region.EnglishName))
+                {
+                    countries.Add(region.EnglishName);
+                }
+            }
+            return countries.OrderBy(e => e).ToList();
+        }
+
+        #endregion private
     }
 }

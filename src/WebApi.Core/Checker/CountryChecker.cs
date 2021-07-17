@@ -10,7 +10,7 @@ namespace WebApi.Core.Checker
             "Cambodia", "Myanmar, Pakistan"
         };
 
-        public bool IsValid<T>(T answer)
+        public bool IsValid(string answer)
         {
             return !NotAllowedCountries.Contains(answer.ToString());
         }
