@@ -7,13 +7,15 @@ using WebApi.Data.Repositories;
 
 namespace WebApi.Data.DataSeeder
 {
-    public class ChoiceSeeder : BaseDataSeeder<Choice>, IDataSeeder
+    public class ChoiceSeeder : IDataSeeder
     {
-        private IQuestionRepository _questionRepository;
+        private readonly IQuestionRepository _questionRepository;
+        private readonly IChoiceRepository _choiceRepository;
 
-        public ChoiceSeeder(IChoiceRepository choiceRepository, IQuestionRepository questionRepository)
-            : base(choiceRepository)
+        public ChoiceSeeder(IChoiceRepository choiceRepository,
+            IQuestionRepository questionRepository)
         {
+            _choiceRepository = choiceRepository;
             _questionRepository = questionRepository;
             _countries = GetCountries();
         }
@@ -54,9 +56,9 @@ namespace WebApi.Data.DataSeeder
                     continue;
 
                 title.Question = titleQuestion;
-                await AddNewAsync(title);
+                await AddNewAsync(title, titleQuestion);
             }
-            await _repository.SaveChanges();
+            await _choiceRepository.SaveChanges();
         }
 
         private async Task SeedOccupations()
@@ -68,9 +70,9 @@ namespace WebApi.Data.DataSeeder
                     continue;
 
                 occupation.Question = occupationQuestion;
-                await AddNewAsync(occupation);
+                await AddNewAsync(occupation, occupationQuestion);
             }
-            await _repository.SaveChanges();
+            await _choiceRepository.SaveChanges();
         }
 
         private async Task SeedCountries()
@@ -81,16 +83,17 @@ namespace WebApi.Data.DataSeeder
                 if (countryQuestion.Choices.Exists(e => e.Title == country))
                     continue;
 
-                await AddNewAsync(new Choice(country) { Question = countryQuestion }, true);
+                await AddNewAsync(new Choice(country) { Question = countryQuestion }, countryQuestion, autoSave: true);
             }
+            await _choiceRepository.SaveChanges();
         }
 
-        private async Task AddNewAsync(Choice Choice, bool autoSave = false)
+        private async Task AddNewAsync(Choice Choice, Question question, bool autoSave = false)
         {
-            var existingType = await _repository.Get(Choice.Id);
+            var existingType = await _choiceRepository.CheckExist(Choice.Title, question.Id);
             if (existingType == null)
             {
-                await _repository.Add(Choice, autoSave);
+                await _choiceRepository.Add(Choice, autoSave);
             }
         }
 

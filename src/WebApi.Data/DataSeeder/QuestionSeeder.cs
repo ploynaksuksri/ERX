@@ -7,8 +7,10 @@ using WebApi.Data.Repositories;
 
 namespace WebApi.Data.DataSeeder
 {
-    public class QuestionSeeder : BaseDataSeeder<Question>, IDataSeeder
+    public class QuestionSeeder : IDataSeeder
     {
+        private readonly IQuestionRepository _repository;
+
         private List<Question> _questions = new List<Question>()
         {
             new Question("Title"){ Order = 1},
@@ -23,8 +25,9 @@ namespace WebApi.Data.DataSeeder
             new Question("Business Type"){ Order = 10}
         };
 
-        public QuestionSeeder(IQuestionRepository repository) : base(repository)
+        public QuestionSeeder(IQuestionRepository repository)
         {
+            _repository = repository;
         }
 
         public async Task SeedData()
@@ -39,7 +42,7 @@ namespace WebApi.Data.DataSeeder
 
         private async Task AddNewTypeAsync(Question question)
         {
-            var existingType = await _repository.Get(question.Id);
+            var existingType = await _repository.GetByTitle(question.Title);
             if (existingType == null)
             {
                 await _repository.Add(question, false);

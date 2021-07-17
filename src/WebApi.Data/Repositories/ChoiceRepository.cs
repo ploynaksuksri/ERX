@@ -1,4 +1,6 @@
-﻿using WebApi.Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using WebApi.Data.Models;
 
 namespace WebApi.Data.Repositories
 {
@@ -6,6 +8,11 @@ namespace WebApi.Data.Repositories
     {
         public ChoiceRepository(QuestionDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<Choice> CheckExist(string title, int questionId)
+        {
+            return await _dbContext.Choices.Include(e => e.Question).FirstOrDefaultAsync(e => e.Title == title && e.Question.Id == questionId);
         }
     }
 }
