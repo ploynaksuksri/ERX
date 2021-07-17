@@ -31,6 +31,8 @@ namespace WebApi
 
             services.AddControllers();
 
+            services.AddAutoMapper(typeof(Startup));
+
             services.Scan(scan =>
                 scan.FromAssembliesOf(new Type[] { typeof(IDataSeeder), typeof(IAnswerChecker) })
                     .AddClasses()

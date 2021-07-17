@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,11 +16,14 @@ namespace WebApi.Controllers
     [ApiController]
     public class QuestionController : ControllerBase
     {
-        private IQuestionManager _questionManager;
+        private readonly IQuestionManager _questionManager;
+        private readonly IMapper _mapper;
 
-        public QuestionController(IQuestionManager questionManager)
+        public QuestionController(IQuestionManager questionManager,
+            IMapper mapper)
         {
             _questionManager = questionManager;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -42,12 +46,9 @@ namespace WebApi.Controllers
 
             if (string.IsNullOrEmpty(question.Title))
                 return BadRequest();
-            var choices = new List<Choice>();
-            question.Choices.ForEach(e =>
-               {
-                   choices.Add(new Choice(e.Title));
-               });
-            var result = await _questionManager.AddAsync(new Question(question.Title));
+
+            var questionToAdd = _mapper.Map<Question>(question);
+            var result = await _questionManager.AddAsync(questionToAdd);
 
             return Created("", result);
         }
@@ -63,12 +64,7 @@ namespace WebApi.Controllers
                 return BadRequest();
 
             existingQuestion.Title = question.Title;
-            var choices = new List<Choice>();
-            question.Choices.ForEach(e =>
-            {
-                choices.Add(new Choice(e.Title) { Id = e.Id });
-            });
-            existingQuestion.Choices = choices;
+            existingQuestion.Choices = _mapper.Map<List<Choice>>(question.Choices); ;
             await _questionManager.Update(existingQuestion);
             return NoContent();
         }
