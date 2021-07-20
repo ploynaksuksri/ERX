@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using WebApi.Data.Models;
+using System.Linq;
 
 namespace WebApi.Core.Helper
 {
@@ -10,12 +11,18 @@ namespace WebApi.Core.Helper
         public static string GenerateCsv(List<Answer> answers)
         {
             var stringBuilder = new StringBuilder();
-            foreach (var answer in answers)
+            foreach (var participant in answers.GroupBy(e => e.Participant))
             {
-                var textAnswer = answer.Question.IsMultipleChoice ? answer.Choice.Title : answer.WrittenAnswer;
-                stringBuilder.AppendLine($"{answer.Question.Title},{textAnswer}");
+                var answerList = new List<string>();
+                participant.ToList().ForEach(e => answerList.Add(GetAnswer(e)));
+                stringBuilder.AppendLine($"{participant.Key.Id},{string.Join(",", answerList)}");
             }
             return stringBuilder.ToString();
+        }
+
+        private static string GetAnswer(Answer answer)
+        {
+            return answer.Question.IsMultipleChoice ? answer.Choice.Title : answer.WrittenAnswer;
         }
     }
 }
