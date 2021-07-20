@@ -10,5 +10,6 @@ namespace WebApi.Data.Models
         public int Id { get; set; }
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
         public bool IsDeleted { get; set; }
+        public DateTime UpdatedDateTime { get; set; }
     }
 }

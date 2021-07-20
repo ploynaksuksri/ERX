@@ -8,6 +8,7 @@ namespace WebApi.Data
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<Answer> Answers { get; set; }
         public virtual DbSet<Choice> Choices { get; set; }
+        public virtual DbSet<Participant> Participants { get; set; }
 
         public QuestionDbContext()
         {

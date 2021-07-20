@@ -45,6 +45,7 @@ namespace WebApi.Data.Repositories
 
         public virtual async Task Update(TEntity obj)
         {
+            obj.UpdatedDateTime = DateTime.Now;
             _dbContext.Entry(obj).State = EntityState.Modified;
             await SaveChanges();
         }

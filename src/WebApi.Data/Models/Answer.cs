@@ -2,8 +2,9 @@
 {
     public class Answer : BaseEntity
     {
-        public Question Question {get;set;}
-        public string WrittenAnswer {get;set;}
-        public Choice Choice {get;set;}
+        public Question Question { get; set; }
+        public string WrittenAnswer { get; set; }
+        public Choice Choice { get; set; }
+        public Participant Participant { get; set; }
     }
 }
