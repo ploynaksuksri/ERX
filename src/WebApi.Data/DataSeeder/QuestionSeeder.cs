@@ -13,16 +13,16 @@ namespace WebApi.Data.DataSeeder
 
         private List<Question> _questions = new List<Question>()
         {
-            new Question("Title"){ Order = 1},
-            new Question("First name"){ Order = 2},
-            new Question("Last name"){ Order = 3},
-            new Question("Date of birth"){ Order = 4},
-            new Question("Country of residence"){ Order = 5},
-            new Question("House Address"){ Order = 6},
-            new Question("Work Address"){ Order = 7},
-            new Question("Occupation"){ Order = 8},
-            new Question("Job Title"){ Order = 9},
-            new Question("Business Type"){ Order = 10}
+            new Question(QuestionConstants.Title){ Order = 1},
+            new Question(QuestionConstants.FirstName){ Order = 2},
+            new Question(QuestionConstants.LastName){ Order = 3},
+            new Question(QuestionConstants.DateOfBirth){ Order = 4},
+            new Question(QuestionConstants.CountryOfResidence){ Order = 5},
+            new Question(QuestionConstants.HouseAddress){ Order = 6},
+            new Question(QuestionConstants.WorkAddress){ Order = 7},
+            new Question(QuestionConstants.Occupation){ Order = 8},
+            new Question(QuestionConstants.JobTitle){ Order = 9},
+            new Question(QuestionConstants.BusinessType){ Order = 10}
         };
 
         public QuestionSeeder(IQuestionRepository repository)

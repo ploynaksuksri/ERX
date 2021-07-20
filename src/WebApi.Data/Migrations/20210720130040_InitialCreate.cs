@@ -16,7 +16,8 @@ namespace WebApi.Data.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Order = table.Column<int>(type: "int", nullable: false),
                     CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +33,8 @@ namespace WebApi.Data.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     QuestionId = table.Column<int>(type: "int", nullable: true),
                     CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -40,6 +42,28 @@ namespace WebApi.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Choices_Questions_QuestionId",
                         column: x => x.QuestionId,
+                        principalTable: "Questions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Participants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LastQuestionId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Participants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Participants_Questions_LastQuestionId",
+                        column: x => x.LastQuestionId,
                         principalTable: "Questions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -54,8 +78,10 @@ namespace WebApi.Data.Migrations
                     QuestionId = table.Column<int>(type: "int", nullable: true),
                     WrittenAnswer = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ChoiceId = table.Column<int>(type: "int", nullable: true),
+                    ParticipantId = table.Column<int>(type: "int", nullable: true),
                     CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,6 +90,12 @@ namespace WebApi.Data.Migrations
                         name: "FK_Answers_Choices_ChoiceId",
                         column: x => x.ChoiceId,
                         principalTable: "Choices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Answers_Participants_ParticipantId",
+                        column: x => x.ParticipantId,
+                        principalTable: "Participants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -80,6 +112,11 @@ namespace WebApi.Data.Migrations
                 column: "ChoiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Answers_ParticipantId",
+                table: "Answers",
+                column: "ParticipantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Answers_QuestionId",
                 table: "Answers",
                 column: "QuestionId");
@@ -88,6 +125,11 @@ namespace WebApi.Data.Migrations
                 name: "IX_Choices_QuestionId",
                 table: "Choices",
                 column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Participants_LastQuestionId",
+                table: "Participants",
+                column: "LastQuestionId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -97,6 +139,9 @@ namespace WebApi.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Choices");
+
+            migrationBuilder.DropTable(
+                name: "Participants");
 
             migrationBuilder.DropTable(
                 name: "Questions");

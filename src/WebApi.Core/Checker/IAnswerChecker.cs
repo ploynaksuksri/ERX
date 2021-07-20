@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using WebApi.Data.Models;
 
 namespace WebApi.Core.Checker
 {
     public interface IAnswerChecker
     {
-        bool IsValid(string answer);
+        bool IsValid(Answer answer);
     }
 }

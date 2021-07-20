@@ -10,7 +10,7 @@ using WebApi.Data;
 namespace WebApi.Data.Migrations
 {
     [DbContext(typeof(QuestionDbContext))]
-    [Migration("20210713112129_InitialCreate")]
+    [Migration("20210720130040_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,8 +37,14 @@ namespace WebApi.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("ParticipantId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("QuestionId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("WrittenAnswer")
                         .HasColumnType("nvarchar(max)");
@@ -46,6 +52,8 @@ namespace WebApi.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChoiceId");
+
+                    b.HasIndex("ParticipantId");
 
                     b.HasIndex("QuestionId");
 
@@ -71,11 +79,40 @@ namespace WebApi.Data.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("QuestionId");
 
                     b.ToTable("Choices");
+                });
+
+            modelBuilder.Entity("WebApi.Data.Models.Participant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LastQuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastQuestionId");
+
+                    b.ToTable("Participants");
                 });
 
             modelBuilder.Entity("WebApi.Data.Models.Question", b =>
@@ -97,6 +134,9 @@ namespace WebApi.Data.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Questions");
@@ -108,11 +148,17 @@ namespace WebApi.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ChoiceId");
 
+                    b.HasOne("WebApi.Data.Models.Participant", "Participant")
+                        .WithMany("Answers")
+                        .HasForeignKey("ParticipantId");
+
                     b.HasOne("WebApi.Data.Models.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId");
 
                     b.Navigation("Choice");
+
+                    b.Navigation("Participant");
 
                     b.Navigation("Question");
                 });
@@ -124,6 +170,20 @@ namespace WebApi.Data.Migrations
                         .HasForeignKey("QuestionId");
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("WebApi.Data.Models.Participant", b =>
+                {
+                    b.HasOne("WebApi.Data.Models.Question", "LastQuestion")
+                        .WithMany()
+                        .HasForeignKey("LastQuestionId");
+
+                    b.Navigation("LastQuestion");
+                });
+
+            modelBuilder.Entity("WebApi.Data.Models.Participant", b =>
+                {
+                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("WebApi.Data.Models.Question", b =>

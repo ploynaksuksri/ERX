@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WebApi.Data;
+using WebApi.Data.Models;
 
 namespace WebApi.Core.Checker
 {
@@ -10,9 +12,11 @@ namespace WebApi.Core.Checker
             "Cambodia", "Myanmar, Pakistan"
         };
 
-        public bool IsValid(string answer)
+        public bool IsValid(Answer answer)
         {
-            return !NotAllowedCountries.Contains(answer.ToString());
+            if (answer.Question.Title == QuestionConstants.CountryOfResidence)
+                return !NotAllowedCountries.Contains(answer.Choice.Title);
+            return true;
         }
     }
 }

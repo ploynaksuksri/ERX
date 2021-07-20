@@ -50,23 +50,27 @@ namespace WebApi.Controllers
             if (question == null)
                 return BadRequest();
 
-            var isAnswerValid = true;
             var answer = new Answer();
+            answer.Participant = answerDto.PariticipantId == 0 ? null :
+                new Participant() { Id = answerDto.PariticipantId, LastQuestion = question };
             answer.Question = question;
+
+            var isAnswerValid = true;
+
             if (question.IsMultipleChoice)
             {
                 var selectedChoice = question.Choices.FirstOrDefault(e => e.Id == answerDto.ChoiceId);
                 if (selectedChoice == null)
                     return BadRequest();
                 answer.Choice = selectedChoice;
-                isAnswerValid = CheckAnswer(answer.Choice.Title);
+                isAnswerValid = CheckAnswer(answer);
             }
             else
             {
                 if (string.IsNullOrEmpty(answerDto.WrittenAnswer))
                     return BadRequest();
                 answer.WrittenAnswer = answerDto.WrittenAnswer;
-                isAnswerValid = CheckAnswer(answer.WrittenAnswer);
+                isAnswerValid = CheckAnswer(answer);
             }
 
             if (!isAnswerValid)
@@ -76,14 +80,18 @@ namespace WebApi.Controllers
             return result;
         }
 
-        private bool CheckAnswer(string answer)
+        #region private methods
+
+        private bool CheckAnswer(Answer answer)
         {
             foreach (var checker in _answerCheckers)
             {
-                if (checker.IsValid(answer))
+                if (!checker.IsValid(answer))
                     return false;
             }
             return true;
         }
+
+        #endregion private methods
     }
 }

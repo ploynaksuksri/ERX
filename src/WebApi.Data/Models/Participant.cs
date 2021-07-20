@@ -5,6 +5,7 @@ namespace WebApi.Data.Models
     public class Participant : BaseEntity
     {
         public Question LastQuestion { get; set; }
-        public List<Answer> Answers { get; set; }
+
+        public List<Answer> Answers { get; set; } = new List<Answer>();
     }
 }
