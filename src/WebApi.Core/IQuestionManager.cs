@@ -10,6 +10,8 @@ namespace WebApi.Core
 
         Task<Question> GetAsync(int id);
 
+        Task<Question> GetNextAsync(int participantId);
+
         Task<Question> AddAsync(Question question);
 
         Task Update(Question question);

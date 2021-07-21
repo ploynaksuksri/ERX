@@ -1,4 +1,6 @@
-﻿using WebApi.Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using WebApi.Data.Models;
 
 namespace WebApi.Data.Repositories
 {
@@ -6,6 +8,11 @@ namespace WebApi.Data.Repositories
     {
         public ParticipantRepository(QuestionDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public async Task<Participant> Get(int id)
+        {
+            return await _dbContext.Participants.Include(e => e.LastQuestion).FirstOrDefaultAsync(e => e.Id == id);
         }
     }
 }

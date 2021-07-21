@@ -32,10 +32,13 @@ namespace WebApi.Controllers
             return await _questionManager.GetAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<Question> Get(int id)
+        [HttpGet("{participantId}")]
+        public async Task<ActionResult<Question>> Get(int participantId)
         {
-            return await _questionManager.GetAsync(id);
+            var question = await _questionManager.GetNextAsync(participantId);
+            if (question == null)
+                return BadRequest();
+            return Ok(question);
         }
 
         [HttpPost]

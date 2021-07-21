@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,11 +12,15 @@ namespace WebApi.Core
     {
         private IQuestionRepository _questionRepository;
         private IChoiceRepository _choiceRepository;
+        private IParticipantRepository _participantRepository;
 
-        public QuestionManager(IQuestionRepository questionRepository, IChoiceRepository choiceRepository)
+        public QuestionManager(IQuestionRepository questionRepository,
+            IChoiceRepository choiceRepository,
+            IParticipantRepository participantRepository)
         {
             _questionRepository = questionRepository;
             _choiceRepository = choiceRepository;
+            _participantRepository = participantRepository;
         }
 
         public async Task<Question> AddAsync(Question question)
@@ -41,6 +46,21 @@ namespace WebApi.Core
         public async Task<Question> GetAsync(int id)
         {
             return await _questionRepository.Get(id);
+        }
+
+        public async Task<Question> GetNextAsync(int participantId)
+        {
+            var nextOrder = 1;
+            if (participantId != 0)
+            {
+                var participant = await _participantRepository.Get(participantId);
+                if (participant == null)
+                    throw new Exception("The given participant id is not found.");
+
+                nextOrder = participant.LastQuestion.Order + 1;
+            }
+
+            return await _questionRepository.GetByOrder(nextOrder);
         }
 
         public async Task Update(Question question)

@@ -26,5 +26,10 @@ namespace WebApi.Data.Repositories
         {
             return await _dbContext.Questions.Include(e => e.Choices).ToListAsync();
         }
+
+        public async Task<Question> GetByOrder(int order)
+        {
+            return await _dbContext.Questions.Include(e => e.Choices).FirstOrDefaultAsync(e => e.Order == order);
+        }
     }
 }
