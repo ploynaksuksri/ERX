@@ -14,22 +14,22 @@ namespace WebApi.Data.Repositories
 
         public async Task<Question> GetByTitle(string title)
         {
-            return await _dbContext.Questions.Include(e => e.Choices).FirstOrDefaultAsync(e => e.Title == title);
+            return await _dbContext.Questions.Where(e => !e.IsDeleted).Include(e => e.Choices).FirstOrDefaultAsync(e => e.Title == title);
         }
 
         public async Task<Question> Get(int id)
         {
-            return await _dbContext.Questions.Include(e => e.Choices).FirstOrDefaultAsync(e => e.Id == id);
+            return await _dbContext.Questions.Where(e => !e.IsDeleted).Include(e => e.Choices).FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task<List<Question>> GetAll()
         {
-            return await _dbContext.Questions.Include(e => e.Choices).ToListAsync();
+            return await _dbContext.Questions.Where(e => !e.IsDeleted).Include(e => e.Choices).ToListAsync();
         }
 
         public async Task<Question> GetByOrder(int order)
         {
-            return await _dbContext.Questions.Include(e => e.Choices).FirstOrDefaultAsync(e => e.Order == order);
+            return await _dbContext.Questions.Where(e => !e.IsDeleted).Include(e => e.Choices).FirstOrDefaultAsync(e => e.Order == order);
         }
     }
 }
